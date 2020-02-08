@@ -1,6 +1,7 @@
 phrase_to_paste = ''
 press_f2_on_ctrl1 = False
 does_press_enter = False
+cut_instead_of_copy = False
 exit_on_f5 = False
 config = {}
 
@@ -28,5 +29,7 @@ def configure():
         press_f2_on_ctrl1 = True
     if config['PRESS_ENTER'] == 'True':
         does_press_enter = True
+    if config['CUT_INSTEAD_OF_COPY'] == 'True':
+        cut_instead_of_copy = True
     if config['EXIT_ON_F5'] == 'True':
         exit_on_f5 = True

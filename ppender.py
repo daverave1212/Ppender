@@ -42,15 +42,22 @@ def copy_selected_file_to_path(destination_path):
     if not os.path.exists(destination_path):
         print('The given path does not exist.')
         return
-    print('It exists..')
+    if not os.path.exists(source_path):
+        print('The file in your clipboard does not exist.')
+        return
     if os.path.isdir(source_path):
         print("It's a directory, mate...")
     else:
         file_name = os.path.basename(source_path)
-        shutil.copyfile(source_path, os.path.join(destination_path, file_name))
+        destination_path = os.path.join(destination_path, file_name)
+        if config.cut_instead_of_copy:
+            print('Moving..')
+            shutil.move(source_path, destination_path)
+        else:
+            os.replace(source_path, destination_path)        
         print('Done')
-    
-    
+
+
 
 
 def on_press(key):
@@ -59,7 +66,7 @@ def on_press(key):
         return
     if key == Key.f3:                           # F3
         do_paste_magic()
-    elif key == Key.f5 and config.exit_on_f5:          # F5
+    elif key == Key.f5 and config.exit_on_f5:   # F5
         sys.exit()
     elif str(key) == '<49>':                    # ctrl + 1
         do_paste_magic()
