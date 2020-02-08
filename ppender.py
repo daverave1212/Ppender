@@ -24,8 +24,9 @@ def do_paste_magic():
         press_f2()
         time.sleep(0.01)
     time.sleep(0.01)
-    type_string(get_clipboard_text() + config.phrase_to_paste)
+    type_string(get_clipboard_text(remove_newline=True) + config.phrase_to_paste)
     if config.does_press_enter:
+        time.sleep(0.01)
         press_enter()
     time.sleep(0.01)
     capture_keys = True
@@ -99,8 +100,11 @@ def press_ctrl_c():
     controller.release(Key.ctrl_l)
     controller.release('c')
 
-def get_clipboard_text():
-    return pyperclip.paste()
+def get_clipboard_text(remove_newline=False):
+    text = pyperclip.paste()
+    if remove_newline:
+        text = text.rstrip()
+    return text
 
 def is_clipboard_hdrop():
     win32clipboard.OpenClipboard()
