@@ -33,42 +33,45 @@ def do_paste_magic():
 
 def copy_selected_file_to_path(destination_path):
     time.sleep(0.01)
+    print('Copying...')
     press_ctrl_c()
     time.sleep(0.01)
     if not is_clipboard_hdrop():
-        print("ERROR: Something went wrong.")
+        print("  ERROR: Something went wrong.")
         return
     (source_path, ) = get_clipboard_hdrop_path()    # It's a tuple of one element
-    print('Copying ' + source_path + ' to ' + destination_path)
     if not os.path.exists(destination_path):
-        print('The given path does not exist.')
+        print('  The given path (' + destination_path + ') does not exist.')
         return
     if not os.path.exists(source_path):
-        print('The file in your clipboard does not exist.')
+        print('  The file in your clipboard (' + source_path + ') does not exist.')
         return
     if os.path.isdir(source_path):
-        print("It's a directory, mate...")
+        print("  It's a directory, mate...")
     else:
         file_name = os.path.basename(source_path)
         destination_path = os.path.join(destination_path, file_name)
         if config.cut_instead_of_copy:
-            print('Moving..')
+            print('  Moving from ' + source_path + ' to ' + destination_path)
             shutil.move(source_path, destination_path)
         else:
             os.replace(source_path, destination_path)        
         print('Done')
 
 
-
-
 def on_press(key):
-    global is_ctrl_down
     if capture_keys is False:
         return
-    if key == Key.f3:                           # F3
-        do_paste_magic()
     elif key == Key.f5 and config.exit_on_f5:   # F5
+        print('Exiting.')
         sys.exit()
+    elif key == Key.f8:                         # F8
+        do_paste_magic()
+    elif key == Key.f9:                         # F9
+        copy_selected_file_to_path(config.config['PATH1'])
+    elif key == Key.f10:                        # F10
+        copy_selected_file_to_path(config.config['PATH2'])
+    '''
     elif str(key) == '<49>':                    # ctrl + 1
         do_paste_magic()
     elif str(key) == '<50>':                    # ctrl + 2
@@ -77,6 +80,7 @@ def on_press(key):
         copy_selected_file_to_path(config.config['PATH2'])
     else:
         print(key)
+    '''
 
 def on_release(key):
     pass
@@ -121,9 +125,14 @@ def get_clipboard_hdrop_path(): # Will crash if it's not a CF_HDROP format. Use 
     return data
 
 
+try:
+    with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
+        listener.join()
+except:
+    print('Oh no! Looks like Ppender has crashed! No worries, send the messages above to Dave and he will know what to do!')
 
-with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
-    listener.join()
+print('Press enter to exit.')
+input()
 
 
 
