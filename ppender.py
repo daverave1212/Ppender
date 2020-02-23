@@ -1,3 +1,6 @@
+# Code by Irimia David (https://github.com/daverave1212/Ppender)
+# Idea by Logofeteanu Stefan
+
 import sys
 import time
 import pynput
@@ -8,24 +11,27 @@ import os
 import win32clipboard
 import shutil
 
-import config
+from config import parse_config_file
 
 
 controller = keyboard.Controller()
 capture_keys = True
 
-config.configure()
+config = parse_config_file()
 
+# 1. F2 (optional)
+# 2. Type what is in clipboard
+# 3. Enter (*)
 def do_paste_magic():
     capture_keys = False
     controller.release(Key.ctrl_l)
     time.sleep(0.01)
-    if config.press_f2_on_ctrl1:
+    if config['RENAME_PRESS_F2']:
         press_f2()
         time.sleep(0.01)
     time.sleep(0.01)
-    type_string(get_clipboard_text(remove_newline=True) + config.phrase_to_paste)
-    if config.does_press_enter:
+    type_string(get_clipboard_text(remove_newline=True) + config['TEXT'])
+    if config['RENAME_PRESS_ENTER']:
         time.sleep(0.01)
         press_enter()
     time.sleep(0.01)
@@ -51,7 +57,7 @@ def copy_selected_file_to_path(destination_path):
     else:
         file_name = os.path.basename(source_path)
         destination_path = os.path.join(destination_path, file_name)
-        if config.cut_instead_of_copy:
+        if config['CUT_INSTEAD_OF_COPY']:
             print('  Moving from ' + source_path + ' to ' + destination_path)
             shutil.move(source_path, destination_path)
         else:
@@ -60,27 +66,19 @@ def copy_selected_file_to_path(destination_path):
 
 
 def on_press(key):
+    char_code = str(key)
     if capture_keys is False:
         return
-    elif key == Key.f5 and config.exit_on_f5:   # F5
+    if char_code == config['KEY_EXIT']:
         print('Exiting.')
         sys.exit()
-    elif key == Key.f8:                         # F8
+    elif char_code == config['KEY_RENAME']:
         do_paste_magic()
-    elif key == Key.f9:                         # F9
-        copy_selected_file_to_path(config.config['PATH1'])
-    elif key == Key.f10:                        # F10
-        copy_selected_file_to_path(config.config['PATH2'])
-    '''
-    elif str(key) == '<49>':                    # ctrl + 1
-        do_paste_magic()
-    elif str(key) == '<50>':                    # ctrl + 2
-        copy_selected_file_to_path(config.config['PATH1'])
-    elif str(key) == '<51>':                    # ctrl + 2
-        copy_selected_file_to_path(config.config['PATH2'])
-    else:
-        print(key)
-    '''
+    elif char_code == config['KEY_COPY_TO_PATH1']:
+        copy_selected_file_to_path(config['PATH1'])
+    elif char_code == config['KEY_COPY_TO_PATH2']:
+        copy_selected_file_to_path(config['PATH2'])
+    return
 
 def on_release(key):
     pass

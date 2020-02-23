@@ -1,9 +1,3 @@
-phrase_to_paste = ''
-press_f2_on_ctrl1 = False
-does_press_enter = False
-cut_instead_of_copy = False
-exit_on_f5 = False
-config = {}
 
 def parse_config_file():
     with open('config.cfg', 'r') as f:  # Parse the config file
@@ -13,23 +7,20 @@ def parse_config_file():
         config = {}
         for pair in pairs:
             config[pair[0].strip()] = pair[1].strip()
+        setup_config(config)
         return config
 
-def configure():
-    global config
-    global phrase_to_paste, press_f2_on_ctrl1, does_press_enter, exit_on_f5
-    config = parse_config_file()
+def setup_config(config):
+    print(config)
     if config['TEXT'] == 'None':
         print('Type in the phrase you want to paste with F3:')
-        phrase_to_paste = input()
-        print('Ok: ' + phrase_to_paste)
-    else:
-        phrase_to_paste = config['TEXT']
-    if config['PRESS_F2_ON_CTRL1'] == 'True':
-        press_f2_on_ctrl1 = True
-    if config['PRESS_ENTER'] == 'True':
-        does_press_enter = True
-    if config['CUT_INSTEAD_OF_COPY'] == 'True':
-        cut_instead_of_copy = True
-    if config['EXIT_ON_F5'] == 'True':
-        exit_on_f5 = True
+        config['TEXT'] = input()
+        print('Ok: ' + config['TEXT'])
+    config['RENAME_PRESS_F2'] = to_bool(config['RENAME_PRESS_F2'])
+    config['RENAME_PRESS_ENTER'] = to_bool(config['RENAME_PRESS_ENTER'])
+    config['CUT_INSTEAD_OF_COPY'] = to_bool(config['CUT_INSTEAD_OF_COPY'])
+
+def to_bool(string):
+    return True if string in ['True', 'true', 'yes', '1'] else False
+
+    
